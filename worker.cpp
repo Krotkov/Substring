@@ -15,11 +15,11 @@ void Worker::indexDirectory() {
 }
 
 void Worker::searchSubstring() {
-    /*if (searcher != nullptr) delete searcher;
+    if (searcher != nullptr) delete searcher;
     searcher = new Searcher(pattern, &filesTrigrams);
     connect(searcher, SIGNAL(foundFile(QString &)), mainWindow, SLOT(addFile(QString&)));
 
-    searcher->searchSubstring();*/
+    searcher->searchPattern();
 }
 
 Worker::~Worker() {

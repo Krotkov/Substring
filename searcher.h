@@ -17,6 +17,7 @@ public:
 private:
     bool checkTrigrams(QSet<qint32> & fileTrigrams);
     qint32 getTrigram(char * pointer);
+    void searchPatternInFile(QFile & file);
 
     //QString directory;
     QString pattern;
