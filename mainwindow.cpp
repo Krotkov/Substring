@@ -43,6 +43,7 @@ main_window::main_window(QWidget *parent)
     connect(ui->lineEdit, &QLineEdit::returnPressed, this, &main_window::searchSubstring);
     connect(ui->actionScan_Directory, &QAction::triggered, this, &main_window::select_directory);
     connect(ui->deleteButton, &QPushButton::clicked, this, &main_window::deleteFiles);
+    connect(ui->stopButton, &QPushButton::clicked, this, &main_window::stop);
     connect(ui->treeWidget,
                 SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
                 this,
@@ -51,10 +52,12 @@ main_window::main_window(QWidget *parent)
 
 main_window::~main_window()
 {
+    emit stopWorker();
     if (thread != nullptr) {
         thread->exit();
         thread->wait();
     }
+    delete thread;
 }
 
 void main_window::select_directory()
@@ -68,16 +71,16 @@ void main_window::select_directory()
     }
     setupInterface();
     setWindowTitle(dir);
-    if (thread != nullptr) {
-        thread->exit();
-        thread->wait();
-        delete thread;
-    }
+    resetThread();
     worker = new Worker(dir, this);
     thread = new QThread();
     worker->moveToThread(thread);
 
+
+    connect(this, SIGNAL(stopWorker()), worker, SLOT(stop()), Qt::DirectConnection);
     connect(thread, SIGNAL(started()), worker, SLOT(indexDirectory()));
+    //connect(thread, SIGNAL(finished()), worker, SLOT(deleteLater()));
+    //connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     connect(this, SIGNAL(doSearch(const QString&)), worker, SLOT(changePattern(const QString&)));
     thread->start();
 }
@@ -149,8 +152,24 @@ void main_window::setupInterface() {
     ui->treeWidget->clear();
     ui->stopButton->setHidden(true);
     ui->deleteButton->setHidden(true);
+    ui->progressBar->setHidden(true);
+    setWindowTitle(QString("Please select directory to scan"));
 }
 
 void main_window::setProgress(int percent) {
     ui->progressBar->setValue(percent);
+}
+
+void main_window::resetThread() {
+    emit stopWorker();
+    if (thread != nullptr) {
+        thread->quit();
+        thread->wait();
+    }
+    delete thread;
+}
+
+void main_window::stop() {
+    emit stopWorker();
+    setupInterface();
 }

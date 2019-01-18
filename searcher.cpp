@@ -12,6 +12,7 @@ const qint64 BUFFER_SIZE = 128*1024;
 Searcher::Searcher(QString const & pattern, FilesTrigrams * filesTrigrmas) {
     this->pattern = pattern;
     this->filesTrigrams = filesTrigrmas;
+    this->needStop = false;
     normalPattern = new char[pattern.size() + 1];
     memcpy(normalPattern, pattern.toLatin1().data(), pattern.size());
     normalPattern[pattern.size()] = '\0';
@@ -35,6 +36,7 @@ qint32 Searcher::getTrigram(char * pointer) {
 void Searcher::searchPattern() {
     emit started();
     for (auto filePath: filesTrigrams->keys()) {
+        if (needStop) break;
         QFileInfo fileInfo(filePath);
         sumSize += fileInfo.size();
     }
@@ -44,6 +46,7 @@ void Searcher::searchPattern() {
     }
     qint64 curSize = 0;
     for (auto fileIterator = filesTrigrams->begin(); fileIterator != filesTrigrams->end(); fileIterator++) {
+        if (needStop) break;
         QFileInfo fileInfo(fileIterator.key());
         curSize += fileInfo.size();
         if (!checkTrigrams(fileIterator.value())) {
@@ -65,6 +68,7 @@ void Searcher::searchPatternInFile(QFile & file) {
     buffer[BUFFER_SIZE] = '\0';
     file.read(buffer, patternShift);
     while (!file.atEnd()) {
+        if (needStop) break;
         qint64 size = patternShift + file.read(buffer + patternShift, BUFFER_SIZE - patternShift);
         buffer[size] = '\0';
         char* ptr = strstr(buffer, normalPattern);
@@ -87,4 +91,8 @@ bool Searcher::checkTrigrams(QSet<qint32> & fileTrigrams) {
 
 void Searcher::updateProgress(qint64 percent) {
     emit progress(percent * 100 / sumSize);
+}
+
+void Searcher::stop() {
+    needStop = true;
 }

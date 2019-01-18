@@ -9,8 +9,12 @@ Worker::Worker(QString const& dir, QObject * parent)
 }
 
 void Worker::indexDirectory() {
+    if (auto files = watcher.files(); !files.isEmpty()) {
+            watcher.removePaths(files);
+    }
     if (indexer != nullptr) delete indexer;
     indexer = new Indexer(dir, &watcher);
+    connect(this, SIGNAL(stopAll()), indexer, SLOT(stop()), Qt::DirectConnection);
     connect(indexer, SIGNAL(started()), mainWindow, SLOT(preIndexInterface()));
     connect(indexer, SIGNAL(finished()), mainWindow, SLOT(postIndexInterface()));
     connect(indexer, SIGNAL(progress(int)), mainWindow, SLOT(setProgress(int)));
@@ -20,6 +24,7 @@ void Worker::indexDirectory() {
 void Worker::searchSubstring() {
     if (searcher != nullptr) delete searcher;
     searcher = new Searcher(pattern, &filesTrigrams);
+    connect(this, SIGNAL(stopAll()), searcher, SLOT(stop()), Qt::DirectConnection);
     connect(searcher, SIGNAL(foundFile(const QString &)), mainWindow, SLOT(addFile(const QString&)));
     connect(searcher, SIGNAL(started()), mainWindow, SLOT(preSearchInterface()));
     connect(searcher, SIGNAL(finished()), mainWindow, SLOT(postSearchInterface()));
@@ -59,4 +64,8 @@ void Worker::updateFile(const QString & filePath) {
     FileTrigrams fileTrigrams;
     indexer->countFileTrigrams(file, fileTrigrams);
     filesTrigrams[filePath] = fileTrigrams;
+}
+
+void Worker::stop() {
+    emit stopAll();
 }

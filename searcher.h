@@ -21,6 +21,8 @@ signals:
     void finished();
     void progress(int);
 
+public slots:
+    void stop();
 private:
     qint64 sumSize = 0;
     void updateProgress(qint64);
@@ -28,11 +30,11 @@ private:
     qint32 getTrigram(char * pointer);
     void searchPatternInFile(QFile & file);
 
-    //QString directory;
     QString pattern;
     char* normalPattern;
     FilesTrigrams * filesTrigrams;
     PatternTrigrams patternTrigrams;
+    bool needStop;
 };
 
 #endif // SEARCHER_H

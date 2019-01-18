@@ -9,10 +9,11 @@ const qint32 MAX_CHAR = 256;
 const qint32 MAGIC_TRIGRAMS = 20000;
 
 Indexer::Indexer(QString const& directory, QFileSystemWatcher * watcher)
-    : watcher(watcher), directory(directory) {}
+    : watcher(watcher), directory(directory), needStop(false) {}
 
 void Indexer::indexDirectory(FilesTrigrams & filesTrigrams) {
-     emit started();
+    std::cout << "[" << std::endl;
+    emit started();
      QDirIterator it(directory, QDir::Files, QDirIterator::Subdirectories);
      while (it.hasNext()) {
         QFileInfo fileInfo(it.next());
@@ -25,6 +26,9 @@ void Indexer::indexDirectory(FilesTrigrams & filesTrigrams) {
      QDirIterator dirIterator(directory, QDir::Files, QDirIterator::Subdirectories);
      qint64 curSize = 0;
      while (dirIterator.hasNext()) {
+         if (needStop) {
+             break;
+         }
         QFileInfo fileInfo(dirIterator.next());
         curSize += fileInfo.size();
         if (!fileInfo.permission(QFile::ReadUser)) {
@@ -49,12 +53,16 @@ void Indexer::indexDirectory(FilesTrigrams & filesTrigrams) {
 }
 
 void Indexer::countFileTrigrams(QFile & file, FileTrigrams& fileTrigrams) {
+    //std::cout << "t" << std::endl;
     if (!file.open(QIODevice::ReadOnly)) {
         throw std::logic_error("Can't open file: " + file.fileName().toStdString());
     }
     char* buffer = new char[BUFFER_SIZE];
     file.read(buffer, SHIFT);
     while (!file.atEnd()) {
+        if (needStop) {
+            break;
+        }
         qint64 size = SHIFT + file.read(buffer + SHIFT, BUFFER_SIZE - SHIFT);
         if (fileTrigrams.size() >= MAGIC_TRIGRAMS) {
             break;
@@ -65,6 +73,7 @@ void Indexer::countFileTrigrams(QFile & file, FileTrigrams& fileTrigrams) {
     }
     delete[] buffer;
     file.close();
+    //std::cout << "ff" << std::endl;
 }
 
 qint32 Indexer::getTrigramHash(char* trigramPointer) {
@@ -77,4 +86,8 @@ qint32 Indexer::getTrigramHash(char* trigramPointer) {
 
 void Indexer::updateProgress(qint64 curSize) {
     emit progress((curSize * 100 / sumSize));
+}
+
+void Indexer::stop() {
+    needStop = true;
 }

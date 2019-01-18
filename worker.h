@@ -13,11 +13,16 @@ class Worker : public QObject
 public:
     Worker(QString const & dir, QObject * parent);
     ~Worker();
+
+public:
+signals:
+    void stopAll();
 public slots:
     void updateFile(const QString&);
     void indexDirectory();
     void searchSubstring();
     void changePattern(const QString&);
+    void stop();
 private:
     Indexer * indexer;
     Searcher * searcher;

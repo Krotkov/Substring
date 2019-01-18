@@ -24,7 +24,8 @@ signals:
     void started();
     void finished();
     void progress(int);
-
+public slots:
+    void stop();
 
 private:
     void updateProgress(qint64);
@@ -32,6 +33,7 @@ private:
     QFileSystemWatcher * watcher;
     QString directory;
     qint64 sumSize = 0;
+    bool needStop;
 };
 
 #endif // INDEXER_H

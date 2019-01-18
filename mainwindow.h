@@ -30,12 +30,15 @@ public slots:
     void addFile(const QString& fileName);
     void deleteFiles();
     void setProgress(int);
+    void stop();
 
 public:
 signals:
     void setPattern();
     void doSearch(const QString&);
+    void stopWorker();
 private:
+    void resetThread();
     void setupInterface();
     std::unique_ptr<Ui::MainWindow> ui;
     Worker * worker;
