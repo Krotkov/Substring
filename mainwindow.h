@@ -19,10 +19,12 @@ public:
     explicit main_window(QWidget *parent = nullptr);
     ~main_window();
 public slots:
+    void openFile(QTreeWidgetItem*, int);
     void select_directory();
     void show_about_dialog();
     void searchSubstring();
     void addFile(const QString& fileName);
+    void deleteFiles();
 
 public:
 signals:

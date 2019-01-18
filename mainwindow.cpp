@@ -28,15 +28,24 @@ main_window::main_window(QWidget *parent)
     ui->actionScan_Directory->setIcon(style.standardIcon(QCommonStyle::SP_DialogOpenButton));
     ui->actionExit->setIcon(style.standardIcon(QCommonStyle::SP_DialogCloseButton));
     ui->actionAbout->setIcon(style.standardIcon(QCommonStyle::SP_DialogHelpButton));
+    setWindowTitle(QString("Please select directory to scan"));
 
     ui->statusBar->addPermanentWidget(ui->progressBar);
+    ui->statusBar->addPermanentWidget(ui->stopButton);
+    ui->statusBar->addPermanentWidget(ui->deleteButton);
 
     ui->progressBar->setHidden(true);
+    ui->deleteButton->setHidden(true);
     ui->progressBar->setRange(0, 100);
     ui->stopButton->setHidden(true);
 
     connect(ui->lineEdit, &QLineEdit::returnPressed, this, &main_window::searchSubstring);
     connect(ui->actionScan_Directory, &QAction::triggered, this, &main_window::select_directory);
+    connect(ui->deleteButton, &QPushButton::clicked, this, &main_window::deleteFiles);
+    connect(ui->treeWidget,
+                SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
+                this,
+                SLOT(openFile(QTreeWidgetItem*, int)));
 }
 
 main_window::~main_window()
@@ -53,7 +62,7 @@ void main_window::select_directory()
                                                     QString(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
     ui->treeWidget->clear();
-
+    setWindowTitle(dir);
     worker = new Worker(dir, this);
     thread = new QThread();
     worker->moveToThread(thread);
@@ -75,7 +84,30 @@ void main_window::addFile(const QString & fileName) {
 }
 
 void main_window::searchSubstring() {
+    ui->treeWidget->clear();
     QString pattern = ui->lineEdit->text();
-    std::cout << "c" << std::endl;
     emit doSearch(pattern);
+}
+
+void main_window::deleteFiles() {
+    auto selectedItems = ui->treeWidget->selectedItems();
+    auto answer = QMessageBox::question(this, "Deleting",
+                                        "Do you want to delete " + QString::number(selectedItems.size())
+                                        + " selected files?");
+    if (answer == QMessageBox::No) {
+        return;
+    }
+    for (auto & selectedItem: selectedItems) {
+        QFile file(selectedItem->text(0));
+        if (!file.exists() || file.remove()) {
+            delete selectedItem;
+        }
+    }
+}
+
+void main_window::openFile(QTreeWidgetItem* item, int) {
+    QFile file(item->text(0));
+    if (file.exists()) {
+        QDesktopServices::openUrl(item->text(0));
+    }
 }

@@ -2,6 +2,7 @@
 #define WORKER_H
 
 #include <QObject>
+#include <QFileSystemWatcher>
 #include <QString>
 #include "indexer.h"
 #include "searcher.h"
@@ -13,6 +14,7 @@ public:
     Worker(QString const & dir, QObject * parent);
     ~Worker();
 public slots:
+    void updateFile(const QString&);
     void indexDirectory();
     void searchSubstring();
     void changePattern(const QString&);
@@ -23,6 +25,7 @@ private:
     QString dir;
     QString pattern;
     FilesTrigrams filesTrigrams;
+    QFileSystemWatcher watcher;
 };
 
 #endif // WORKER_H

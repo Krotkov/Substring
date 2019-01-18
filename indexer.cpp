@@ -8,7 +8,8 @@ const qint16 SHIFT = 2;
 const qint32 MAX_CHAR = 256;
 const qint32 MAGIC_TRIGRAMS = 20000;
 
-Indexer::Indexer(QString const& directory) : directory(directory) {}
+Indexer::Indexer(QString const& directory, QFileSystemWatcher * watcher)
+    : watcher(watcher), directory(directory) {}
 
 void Indexer::indexDirectory(FilesTrigrams & filesTrigrams) {
      QDirIterator dirIterator(directory, QDir::Files, QDirIterator::Subdirectories);
@@ -23,6 +24,7 @@ void Indexer::indexDirectory(FilesTrigrams & filesTrigrams) {
         if (fileTrigrams.size() >= MAGIC_TRIGRAMS) {
             continue;
         }
+        watcher->addPath(fileInfo.absoluteFilePath());
         filesTrigrams[fileInfo.absoluteFilePath()] = fileTrigrams;
      }
 }

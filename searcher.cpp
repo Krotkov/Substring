@@ -56,7 +56,6 @@ void Searcher::searchPatternInFile(QFile & file) {
         buffer[size] = '\0';
         char* ptr = strstr(buffer, normalPattern);
         if (ptr) {
-           std::cout << "a" << std::endl;
            emit foundFile(file.fileName());
            break;
         }
