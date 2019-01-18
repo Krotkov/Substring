@@ -9,14 +9,17 @@ void Worker::indexDirectory() {
     if (indexer != nullptr) delete indexer;
     indexer = new Indexer(dir);
     indexer->indexDirectory(filesTrigrams);
+    for (auto it = filesTrigrams.begin(); it != filesTrigrams.end(); it++) {
+        std::cout << it->size() << std::endl;
+    }
 }
 
 void Worker::searchSubstring() {
-    if (searcher != nullptr) delete searcher;
+    /*if (searcher != nullptr) delete searcher;
     searcher = new Searcher(pattern, &filesTrigrams);
     connect(searcher, SIGNAL(foundFile(QString &)), mainWindow, SLOT(addFile(QString&)));
 
-    searcher->searchSubstring();
+    searcher->searchSubstring();*/
 }
 
 Worker::~Worker() {
