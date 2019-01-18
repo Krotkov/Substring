@@ -75,6 +75,7 @@ void main_window::addFile(const QString & fileName) {
 }
 
 void main_window::searchSubstring() {
+    ui->treeWidget->clear();
     QString pattern = ui->lineEdit->text();
     std::cout << "c" << std::endl;
     emit doSearch(pattern);

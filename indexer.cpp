@@ -17,7 +17,6 @@ void Indexer::indexDirectory(FilesTrigrams & filesTrigrams) {
         if (!fileInfo.permission(QFile::ReadUser)) {
             continue;
         }
-        std::cout << "blya" << std::endl;
         FileTrigrams fileTrigrams;
         QFile file(fileInfo.absoluteFilePath());
         countFileTrigrams(file, fileTrigrams);
@@ -34,9 +33,7 @@ void Indexer::countFileTrigrams(QFile & file, FileTrigrams& fileTrigrams) {
     }
     char* buffer = new char[BUFFER_SIZE];
     file.read(buffer, SHIFT);
-    std::cout << buffer[0] << " " << buffer[1] << " " << std::endl;
     while (!file.atEnd()) {
-        std::cout << "hm" << std::endl;
         qint64 size = SHIFT + file.read(buffer + SHIFT, BUFFER_SIZE - SHIFT);
         if (fileTrigrams.size() >= MAGIC_TRIGRAMS) {
             break;

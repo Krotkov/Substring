@@ -14,6 +14,10 @@ public:
     ~Searcher();
 
     void searchPattern();
+public:
+signals:
+void foundFile(const QString&);
+
 private:
     bool checkTrigrams(QSet<qint32> & fileTrigrams);
     qint32 getTrigram(char * pointer);

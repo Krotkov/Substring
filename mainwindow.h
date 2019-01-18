@@ -22,7 +22,7 @@ public slots:
     void select_directory();
     void show_about_dialog();
     void searchSubstring();
-    void addFile(QString& fileName);
+    void addFile(const QString& fileName);
 
 public:
 signals:

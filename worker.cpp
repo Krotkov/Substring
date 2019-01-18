@@ -17,7 +17,8 @@ void Worker::indexDirectory() {
 void Worker::searchSubstring() {
     if (searcher != nullptr) delete searcher;
     searcher = new Searcher(pattern, &filesTrigrams);
-    connect(searcher, SIGNAL(foundFile(QString &)), mainWindow, SLOT(addFile(QString&)));
+    std::cout << "suka" << std::endl;
+    connect(searcher, SIGNAL(foundFile(const QString &)), mainWindow, SLOT(addFile(const QString&)));
 
     searcher->searchPattern();
 }
@@ -31,6 +32,7 @@ void Worker::changePattern(const QString& pattern) {
     if (pattern.isEmpty()) {
         return;
     }
+    std::cout << "ddd" << std::endl;
     if (this->pattern != pattern) {
         this->pattern = pattern;
     }
