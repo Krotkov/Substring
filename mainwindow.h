@@ -19,18 +19,24 @@ public:
     explicit main_window(QWidget *parent = nullptr);
     ~main_window();
 public slots:
+    void preIndexInterface();
+    void postIndexInterface();
+    void preSearchInterface();
+    void postSearchInterface();
     void openFile(QTreeWidgetItem*, int);
     void select_directory();
     void show_about_dialog();
     void searchSubstring();
     void addFile(const QString& fileName);
     void deleteFiles();
+    void setProgress(int);
 
 public:
 signals:
     void setPattern();
     void doSearch(const QString&);
 private:
+    void setupInterface();
     std::unique_ptr<Ui::MainWindow> ui;
     Worker * worker;
     QThread * thread;

@@ -33,21 +33,34 @@ qint32 Searcher::getTrigram(char * pointer) {
 }
 
 void Searcher::searchPattern() {
+    emit started();
+    for (auto filePath: filesTrigrams->keys()) {
+        QFileInfo fileInfo(filePath);
+        sumSize += fileInfo.size();
+    }
+    if (sumSize == 0) {
+        progress(100);
+        return;
+    }
+    qint64 curSize = 0;
     for (auto fileIterator = filesTrigrams->begin(); fileIterator != filesTrigrams->end(); fileIterator++) {
         QFileInfo fileInfo(fileIterator.key());
+        curSize += fileInfo.size();
         if (!checkTrigrams(fileIterator.value())) {
             continue;
         }
         QFile file(fileIterator.key());
         searchPatternInFile(file);
+        updateProgress(curSize);
     }
+    emit finished();
 }
 
 void Searcher::searchPatternInFile(QFile & file) {
     if (!file.open(QIODevice::ReadOnly)) {
         throw std::logic_error("Can't open file: " + file.fileName().toStdString());
     }
-    qint64 patternShift = pattern.size() - 1;
+    qint64 patternShift = qint64(pattern.size()) - 1;
     char * buffer = new char[BUFFER_SIZE + 1];
     buffer[BUFFER_SIZE] = '\0';
     file.read(buffer, patternShift);
@@ -72,3 +85,6 @@ bool Searcher::checkTrigrams(QSet<qint32> & fileTrigrams) {
     return true;
 }
 
+void Searcher::updateProgress(qint64 percent) {
+    emit progress(percent * 100 / sumSize);
+}

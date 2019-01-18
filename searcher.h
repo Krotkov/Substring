@@ -16,9 +16,14 @@ public:
     void searchPattern();
 public:
 signals:
-void foundFile(const QString&);
+    void foundFile(const QString&);
+    void started();
+    void finished();
+    void progress(int);
 
 private:
+    qint64 sumSize = 0;
+    void updateProgress(qint64);
     bool checkTrigrams(QSet<qint32> & fileTrigrams);
     qint32 getTrigram(char * pointer);
     void searchPatternInFile(QFile & file);

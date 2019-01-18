@@ -19,13 +19,19 @@ public:
 public:
     void indexDirectory(FilesTrigrams & filesTrigrams);
     void countFileTrigrams(QFile & file, FileTrigrams & fileTrigrams);
+public:
+signals:
+    void started();
+    void finished();
+    void progress(int);
+
 
 private:
+    void updateProgress(qint64);
     qint32 getTrigramHash(char* trigramPointer);
     QFileSystemWatcher * watcher;
     QString directory;
-    //FilesTrigrams filesTrigrams;
-
+    qint64 sumSize = 0;
 };
 
 #endif // INDEXER_H

@@ -30,9 +30,10 @@ main_window::main_window(QWidget *parent)
     ui->actionAbout->setIcon(style.standardIcon(QCommonStyle::SP_DialogHelpButton));
     setWindowTitle(QString("Please select directory to scan"));
 
-    ui->statusBar->addPermanentWidget(ui->progressBar);
+
     ui->statusBar->addPermanentWidget(ui->stopButton);
     ui->statusBar->addPermanentWidget(ui->deleteButton);
+    ui->statusBar->addPermanentWidget(ui->progressBar);
 
     ui->progressBar->setHidden(true);
     ui->deleteButton->setHidden(true);
@@ -61,8 +62,17 @@ void main_window::select_directory()
     QString dir = QFileDialog::getExistingDirectory(this, "Select Directory for Scanning",
                                                     QString(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
-    ui->treeWidget->clear();
+    QFileInfo selectedDirInfo = QFileInfo(dir);
+    if (!selectedDirInfo.exists()) {
+        return;
+    }
+    setupInterface();
     setWindowTitle(dir);
+    if (thread != nullptr) {
+        thread->exit();
+        thread->wait();
+        delete thread;
+    }
     worker = new Worker(dir, this);
     thread = new QThread();
     worker->moveToThread(thread);
@@ -84,7 +94,6 @@ void main_window::addFile(const QString & fileName) {
 }
 
 void main_window::searchSubstring() {
-    ui->treeWidget->clear();
     QString pattern = ui->lineEdit->text();
     emit doSearch(pattern);
 }
@@ -110,4 +119,38 @@ void main_window::openFile(QTreeWidgetItem* item, int) {
     if (file.exists()) {
         QDesktopServices::openUrl(item->text(0));
     }
+}
+
+void main_window::preIndexInterface() {
+    ui->progressBar->setHidden(false);
+    ui->stopButton->setHidden(false);
+    ui->progressBar->setValue(0);
+}
+
+void main_window::postIndexInterface() {
+    ui->stopButton->setHidden(true);
+    ui->progressBar->setValue(100);
+}
+
+void main_window::preSearchInterface() {
+    ui->stopButton->setHidden(false);
+    ui->deleteButton->setHidden(true);
+    ui->treeWidget->clear();
+    ui->progressBar->setValue(0);
+}
+
+void main_window::postSearchInterface() {
+    ui->stopButton->setHidden(true);
+    ui->deleteButton->setHidden(false);
+    ui->progressBar->setValue(100);
+}
+
+void main_window::setupInterface() {
+    ui->treeWidget->clear();
+    ui->stopButton->setHidden(true);
+    ui->deleteButton->setHidden(true);
+}
+
+void main_window::setProgress(int percent) {
+    ui->progressBar->setValue(percent);
 }

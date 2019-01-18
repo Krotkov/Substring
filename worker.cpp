@@ -11,6 +11,9 @@ Worker::Worker(QString const& dir, QObject * parent)
 void Worker::indexDirectory() {
     if (indexer != nullptr) delete indexer;
     indexer = new Indexer(dir, &watcher);
+    connect(indexer, SIGNAL(started()), mainWindow, SLOT(preIndexInterface()));
+    connect(indexer, SIGNAL(finished()), mainWindow, SLOT(postIndexInterface()));
+    connect(indexer, SIGNAL(progress(int)), mainWindow, SLOT(setProgress(int)));
     indexer->indexDirectory(filesTrigrams);
 }
 
@@ -18,8 +21,14 @@ void Worker::searchSubstring() {
     if (searcher != nullptr) delete searcher;
     searcher = new Searcher(pattern, &filesTrigrams);
     connect(searcher, SIGNAL(foundFile(const QString &)), mainWindow, SLOT(addFile(const QString&)));
+    connect(searcher, SIGNAL(started()), mainWindow, SLOT(preSearchInterface()));
+    connect(searcher, SIGNAL(finished()), mainWindow, SLOT(postSearchInterface()));
+    connect(searcher, SIGNAL(progress(int)), mainWindow, SLOT(setProgress(int)));
+    try {
+        searcher->searchPattern();
+    } catch (std::logic_error) {
 
-    searcher->searchPattern();
+    }
 }
 
 Worker::~Worker() {

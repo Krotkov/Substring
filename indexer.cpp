@@ -12,21 +12,40 @@ Indexer::Indexer(QString const& directory, QFileSystemWatcher * watcher)
     : watcher(watcher), directory(directory) {}
 
 void Indexer::indexDirectory(FilesTrigrams & filesTrigrams) {
+     emit started();
+     QDirIterator it(directory, QDir::Files, QDirIterator::Subdirectories);
+     while (it.hasNext()) {
+        QFileInfo fileInfo(it.next());
+        sumSize += fileInfo.size();
+     }
+     if (sumSize == 0) {
+         emit progress(100);
+         return;
+     }
      QDirIterator dirIterator(directory, QDir::Files, QDirIterator::Subdirectories);
+     qint64 curSize = 0;
      while (dirIterator.hasNext()) {
         QFileInfo fileInfo(dirIterator.next());
+        curSize += fileInfo.size();
         if (!fileInfo.permission(QFile::ReadUser)) {
             continue;
         }
         FileTrigrams fileTrigrams;
         QFile file(fileInfo.absoluteFilePath());
-        countFileTrigrams(file, fileTrigrams);
-        if (fileTrigrams.size() >= MAGIC_TRIGRAMS) {
-            continue;
+        try {
+            countFileTrigrams(file, fileTrigrams);
+            if (fileTrigrams.size() >= MAGIC_TRIGRAMS) {
+                continue;
+            }
+            watcher->addPath(fileInfo.absoluteFilePath());
+            filesTrigrams[fileInfo.absoluteFilePath()] = fileTrigrams;
+            }
+        catch(std::logic_error) {
+
         }
-        watcher->addPath(fileInfo.absoluteFilePath());
-        filesTrigrams[fileInfo.absoluteFilePath()] = fileTrigrams;
+        updateProgress(curSize);
      }
+     emit finished();
 }
 
 void Indexer::countFileTrigrams(QFile & file, FileTrigrams& fileTrigrams) {
@@ -54,4 +73,8 @@ qint32 Indexer::getTrigramHash(char* trigramPointer) {
         result =  result * MAX_CHAR + qint32(trigramPointer[i]);
     }
     return result;
+}
+
+void Indexer::updateProgress(qint64 curSize) {
+    emit progress((curSize * 100 / sumSize));
 }
