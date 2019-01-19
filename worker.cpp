@@ -18,6 +18,7 @@ void Worker::indexDirectory() {
     connect(indexer, SIGNAL(started()), mainWindow, SLOT(preIndexInterface()));
     connect(indexer, SIGNAL(finished()), mainWindow, SLOT(postIndexInterface()));
     connect(indexer, SIGNAL(progress(int)), mainWindow, SLOT(setProgress(int)));
+    connect(indexer, SIGNAL(interrupted()), mainWindow, SLOT(beginInterface()));
     indexer->indexDirectory(filesTrigrams);
 }
 
@@ -29,6 +30,7 @@ void Worker::searchSubstring() {
     connect(searcher, SIGNAL(started()), mainWindow, SLOT(preSearchInterface()));
     connect(searcher, SIGNAL(finished()), mainWindow, SLOT(postSearchInterface()));
     connect(searcher, SIGNAL(progress(int)), mainWindow, SLOT(setProgress(int)));
+    connect(searcher, SIGNAL(interrupted()), mainWindow, SLOT(postIndexInterface()));
     try {
         searcher->searchPattern();
     } catch (std::logic_error) {

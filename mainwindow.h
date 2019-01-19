@@ -31,6 +31,7 @@ public slots:
     void deleteFiles();
     void setProgress(int);
     void stop();
+    void beginInterface();
 
 public:
 signals:

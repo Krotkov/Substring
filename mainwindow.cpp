@@ -125,6 +125,7 @@ void main_window::openFile(QTreeWidgetItem* item, int) {
 }
 
 void main_window::preIndexInterface() {
+    std::cout << "hui" << std::endl;
     ui->progressBar->setHidden(false);
     ui->stopButton->setHidden(false);
     ui->progressBar->setValue(0);
@@ -136,6 +137,7 @@ void main_window::postIndexInterface() {
 }
 
 void main_window::preSearchInterface() {
+    ui->progressBar->setHidden(false);
     ui->stopButton->setHidden(false);
     ui->deleteButton->setHidden(true);
     ui->treeWidget->clear();
@@ -171,5 +173,8 @@ void main_window::resetThread() {
 
 void main_window::stop() {
     emit stopWorker();
+}
+
+void main_window::beginInterface() {
     setupInterface();
 }

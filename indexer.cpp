@@ -48,7 +48,8 @@ void Indexer::indexDirectory(FilesTrigrams & filesTrigrams) {
         }
         updateProgress(curSize);
      }
-     emit finished();
+     if (needStop) emit interrupted();
+     else emit finished();
 }
 
 void Indexer::countFileTrigrams(QFile & file, FileTrigrams& fileTrigrams) {

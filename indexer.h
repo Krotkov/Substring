@@ -24,6 +24,8 @@ signals:
     void started();
     void finished();
     void progress(int);
+    void interrupted();
+
 public slots:
     void stop();
 

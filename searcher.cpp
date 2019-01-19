@@ -46,7 +46,9 @@ void Searcher::searchPattern() {
     }
     qint64 curSize = 0;
     for (auto fileIterator = filesTrigrams->begin(); fileIterator != filesTrigrams->end(); fileIterator++) {
-        if (needStop) break;
+        if (needStop) {
+            break;
+        }
         QFileInfo fileInfo(fileIterator.key());
         curSize += fileInfo.size();
         if (!checkTrigrams(fileIterator.value())) {
@@ -56,7 +58,8 @@ void Searcher::searchPattern() {
         searchPatternInFile(file);
         updateProgress(curSize);
     }
-    emit finished();
+    if (needStop) emit interrupted();
+    else emit finished();
 }
 
 void Searcher::searchPatternInFile(QFile & file) {
