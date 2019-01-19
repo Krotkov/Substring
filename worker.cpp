@@ -54,6 +54,7 @@ void Worker::changePattern(const QString& pattern) {
 }
 
 void Worker::updateFile(const QString & filePath) {
+    std::cout << "update" << filePath.toStdString() << std::endl;
     QFileInfo fileInfo(filePath);
     if (!fileInfo.exists() || !fileInfo.permission(QFile::ReadUser)) {
         filesTrigrams.remove(filePath);
