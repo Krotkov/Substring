@@ -53,7 +53,7 @@ void Indexer::indexDirectory(FilesTrigrams & filesTrigrams) {
 }
 
 void Indexer::countFileTrigrams(QFile & file, FileTrigrams& fileTrigrams) {
-    //std::cout << "t" << std::endl;
+    //std:: << "t" << std::endl;
     if (!file.open(QIODevice::ReadOnly)) {
         throw std::logic_error("Can't open file: " + file.fileName().toStdString());
     }
