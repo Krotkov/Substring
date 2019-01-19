@@ -21,7 +21,7 @@ main_window::main_window(QWidget *parent)
     setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, size(), qApp->desktop()->availableGeometry()));
 
     ui->treeWidget->header()->setSectionResizeMode(0, QHeaderView::Stretch);
-    ui->treeWidget->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    //ui->treeWidget->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     ui->treeWidget->setUniformRowHeights(1);
 
     QCommonStyle style;
