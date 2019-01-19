@@ -12,7 +12,6 @@ Indexer::Indexer(QString const& directory, QFileSystemWatcher * watcher)
     : watcher(watcher), directory(directory), needStop(false) {}
 
 void Indexer::indexDirectory(FilesTrigrams & filesTrigrams) {
-    std::cout << "[" << std::endl;
     emit started();
      QDirIterator it(directory, QDir::Files, QDirIterator::Subdirectories);
      while (it.hasNext()) {
