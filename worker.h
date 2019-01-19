@@ -1,4 +1,4 @@
-#ifndef WORKER_H
+﻿#ifndef WORKER_H
 #define WORKER_H
 
 #include <QObject>
@@ -24,8 +24,6 @@ public slots:
     void changePattern(const QString&);
     void stop();
 private:
-    Indexer * indexer;
-    Searcher * searcher;
     QObject * mainWindow;
     QString dir;
     QString pattern;

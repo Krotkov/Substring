@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "worker.h"
 
@@ -167,7 +167,7 @@ void main_window::resetThread() {
         thread->quit();
         thread->wait();
     }
-    delete thread;
+    //delete thread;
 }
 
 void main_window::stop() {
