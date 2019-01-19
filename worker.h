@@ -28,7 +28,7 @@ private:
     QString dir;
     QString pattern;
     FilesTrigrams filesTrigrams;
-    QFileSystemWatcher watcher;
+    QFileSystemWatcher *watcher;
 };
 
 #endif // WORKER_H

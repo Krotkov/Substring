@@ -5,14 +5,15 @@
 Worker::Worker(QString const& dir, QObject * parent)
     : mainWindow(parent), dir(dir)
 {
-    connect(&watcher, SIGNAL(fileChanged(const QString&)), this, SLOT(updateFile(const QString&)));
+    watcher = new QFileSystemWatcher(this);
+    connect(watcher, SIGNAL(fileChanged(const QString&)), this, SLOT(updateFile(const QString&)));
 }
 
 void Worker::indexDirectory() {
-    if (auto files = watcher.files(); !files.isEmpty()) {
-            watcher.removePaths(files);
+    if (auto files = watcher->files(); !files.isEmpty()) {
+            watcher->removePaths(files);
     }
-    Indexer indexer(dir, &watcher);
+    Indexer indexer(dir, watcher);
     connect(this, SIGNAL(stopAll()), &indexer, SLOT(stop()), Qt::DirectConnection);
     connect(&indexer, SIGNAL(started()), mainWindow, SLOT(preIndexInterface()));
     connect(&indexer, SIGNAL(finished()), mainWindow, SLOT(postIndexInterface()));
@@ -55,10 +56,10 @@ void Worker::updateFile(const QString & filePath) {
     QFileInfo fileInfo(filePath);
     if (!fileInfo.exists() || !fileInfo.permission(QFile::ReadUser)) {
         filesTrigrams.remove(filePath);
-        watcher.removePath(filePath);
+        watcher->removePath(filePath);
         return;
     }
-    Indexer indexer(dir, &watcher);
+    Indexer indexer(dir, watcher);
     filesTrigrams[filePath].clear();
     QFile file(filePath);
     FileTrigrams fileTrigrams;
