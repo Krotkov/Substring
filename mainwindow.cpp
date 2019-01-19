@@ -125,7 +125,6 @@ void main_window::openFile(QTreeWidgetItem* item, int) {
 }
 
 void main_window::preIndexInterface() {
-    std::cout << "hui" << std::endl;
     ui->progressBar->setHidden(false);
     ui->stopButton->setHidden(false);
     ui->progressBar->setValue(0);
