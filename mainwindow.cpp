@@ -162,7 +162,7 @@ void main_window::setProgress(int percent) {
 
 void main_window::resetThread() {
     emit stopWorker();
-    if (thread != nullptr) {
+    if (thread != nullptr && !thread->isFinished()) {
         thread->quit();
         thread->wait();
     }

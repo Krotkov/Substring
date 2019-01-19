@@ -45,16 +45,6 @@
           <string>File name</string>
          </property>
         </column>
-        <column>
-         <property name="text">
-          <string>File path</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Size</string>
-         </property>
-        </column>
        </widget>
       </item>
       <item>
